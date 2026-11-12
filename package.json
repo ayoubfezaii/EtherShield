@@ -1,0 +1,25 @@
+{
+  "name": "diploma-verification-blockchain",
+  "version": "1.0.0",
+  "description": "DApp Ethereum de vérification de diplômes (Solidity, Hardhat)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayoubfezaii/diploma-verification-blockchain.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ayoubfezaii/diploma-verification-blockchain/issues"
+  },
+  "homepage": "https://github.com/ayoubfezaii/diploma-verification-blockchain#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.29.2"
+  }
+}
