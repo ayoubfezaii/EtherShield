@@ -1,3 +1,7 @@
+# Hardhat (fichiers generes par la compilation)
+artifacts/
+cache/
+
 # Logs
 logs
 *.log

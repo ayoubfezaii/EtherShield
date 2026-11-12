@@ -1,4 +1,295 @@
 {
   "_format": "hh-sol-cache-2",
-  "files": {}
+  "files": {
+    "C:\\Users\\user\\Documents\\diploma-verification-blockchain\\contracts\\vulnerable\\BanqueVulnerable.sol": {
+      "lastModificationDate": 1794506998044,
+      "contentHash": "2b87770bbc1c4ffb24656d5ad80cf0d9",
+      "sourceName": "contracts/vulnerable/BanqueVulnerable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "BanqueVulnerable"
+      ]
+    },
+    "C:\\Users\\user\\Documents\\diploma-verification-blockchain\\contracts\\attackers\\AttaquantPhishing.sol": {
+      "lastModificationDate": 1794507003578,
+      "contentHash": "2bbe2656ed91afd46426675f9e46eb89",
+      "sourceName": "contracts/attackers/AttaquantPhishing.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "AttaquantPhishing",
+        "IPortefeuille"
+      ]
+    },
+    "C:\\Users\\user\\Documents\\diploma-verification-blockchain\\contracts\\attackers\\AttaquantReentrance.sol": {
+      "lastModificationDate": 1794506999635,
+      "contentHash": "f3916909952985ff4ca1aff25a1dcbaa",
+      "sourceName": "contracts/attackers/AttaquantReentrance.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "AttaquantReentrance",
+        "IBanque"
+      ]
+    },
+    "C:\\Users\\user\\Documents\\diploma-verification-blockchain\\contracts\\fixed\\BanqueSecurisee.sol": {
+      "lastModificationDate": 1794506998845,
+      "contentHash": "7d0a5cf18664dea4a5da39523579af93",
+      "sourceName": "contracts/fixed/BanqueSecurisee.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "BanqueSecurisee"
+      ]
+    },
+    "C:\\Users\\user\\Documents\\diploma-verification-blockchain\\contracts\\fixed\\CoffreSecurise.sol": {
+      "lastModificationDate": 1794507001227,
+      "contentHash": "3435710b55313ac366706eb2c82408e0",
+      "sourceName": "contracts/fixed/CoffreSecurise.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "CoffreSecurise"
+      ]
+    },
+    "C:\\Users\\user\\Documents\\diploma-verification-blockchain\\contracts\\fixed\\PortefeuilleSecurise.sol": {
+      "lastModificationDate": 1794507002793,
+      "contentHash": "0d3d3fb48df344239c642354fb78d26a",
+      "sourceName": "contracts/fixed/PortefeuilleSecurise.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "PortefeuilleSecurise"
+      ]
+    },
+    "C:\\Users\\user\\Documents\\diploma-verification-blockchain\\contracts\\vulnerable\\CoffreVulnerable.sol": {
+      "lastModificationDate": 1794507000428,
+      "contentHash": "fe2f9c4f44043515d4ebaeda1b20100d",
+      "sourceName": "contracts/vulnerable/CoffreVulnerable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "CoffreVulnerable"
+      ]
+    },
+    "C:\\Users\\user\\Documents\\diploma-verification-blockchain\\contracts\\vulnerable\\PortefeuilleVulnerable.sol": {
+      "lastModificationDate": 1794507002010,
+      "contentHash": "9b962ca6b4a768fed07c26508ca81e00",
+      "sourceName": "contracts/vulnerable/PortefeuilleVulnerable.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "PortefeuilleVulnerable"
+      ]
+    }
+  }
 }
