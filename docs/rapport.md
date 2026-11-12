@@ -260,7 +260,93 @@ Résultat obtenu : 14 tests réussis sur 14.
 
 Convention de nommage : un test `FAILLE` réussit quand l'attaque fonctionne sur le contrat vulnérable, un test `CORRECTION` réussit quand la même attaque échoue sur le contrat corrigé.
 
-## 7. Recommandations générales
+## 7. Analyse du gaz
+
+### 7.1 Méthode
+
+Le plugin `hardhat-gas-reporter` (inclus dans `hardhat-toolbox`) est activé dans `hardhat.config.js`. À chaque exécution de `npx hardhat test`, il mesure le gaz consommé par chaque fonction appelée et par chaque déploiement, puis écrit le résultat dans `gas-report.txt` à la racine du projet.
+
+Conditions de mesure : Solidity 0.8.24, optimiseur désactivé, réseau local Hardhat. Les valeurs ci-dessous sont copiées du rapport généré. Seules les transactions réussies sont mesurées : les appels rejetés (attaques bloquées) n'apparaissent pas.
+
+### 7.2 Tableau comparatif
+
+| Vulnérabilité | Opération | Version vulnérable (gaz) | Version corrigée (gaz) | Écart |
+|---|---|---:|---:|---:|
+| 1. Réentrance | Déploiement de la banque | 414 846 | 466 344 | +51 498 (+12,4 %) |
+| | `deposer()` | 45 182 | 45 182 | 0 |
+| | `retirer()` | 30 299 | 46 152 | +15 853 (+52,3 %) |
+| 2. Contrôle d'accès | Déploiement du coffre | 447 348 | 524 559 | +77 211 (+17,3 %) |
+| | `deposer()` | 22 757 | 22 757 | 0 |
+| | `changerProprietaire()` | 28 676 | 28 866 | +190 (+0,7 %) |
+| | `retirerTout()` | 32 368 | 32 368 | 0 |
+| 3. `tx.origin` | Déploiement du portefeuille | 345 024 | 345 024 | 0 |
+| | `transferer()` | 35 580 | 35 580 | 0 |
+
+À titre d'information, le rapport mesure aussi les contrats d'attaque :
+
+| Contrat d'attaque | Opération | Gaz |
+|---|---|---:|
+| `AttaquantReentrance` | Déploiement | 546 965 |
+| | `attaquer()` (contre la banque vulnérable) | 140 064 |
+| | `recupererButin()` | 28 400 |
+| `AttaquantPhishing` | Déploiement | 224 862 |
+| | `reclamerRecompense()` (contre le portefeuille vulnérable) | 38 442 |
+
+### 7.3 Interprétation
+
+**Réentrance : la correction coûte plus cher.**
+
+- `retirer()` passe de 30 299 à 46 152 gaz. Le surcoût vient du verrou anti-réentrance : la fonction écrit deux fois dans le stockage du contrat (verrou fermé au début, rouvert à la fin). L'écriture dans le stockage est l'opération la plus chère de l'EVM. Ethereum rembourse une partie de ce coût quand la variable revient à zéro, mais ce remboursement est plafonné à 20 % du gaz de la transaction, donc il ne compense pas tout.
+- Le changement d'ordre des instructions (patron CEI) ne coûte rien : ce sont les mêmes opérations, exécutées dans un autre ordre.
+- `deposer()` est identique dans les deux versions, son coût ne change pas.
+- Le déploiement coûte 12,4 % de plus, car le contrat contient davantage de code (le verrou et son message d'erreur). Le déploiement est facturé en fonction de la taille du code.
+
+Le surcoût est justifié : environ 16 000 gaz par retrait, contre la perte de la totalité des fonds de la banque. Si l'on voulait réduire ce coût, le CEI seul suffirait à corriger cette fonction, et le `ReentrancyGuard` d'OpenZeppelin est un verrou optimisé, moins cher que celui écrit ici à des fins pédagogiques.
+
+**Contrôle d'accès : la correction coûte presque la même chose.**
+
+- `changerProprietaire()` coûte 190 gaz de plus (+0,7 %). C'est le prix de deux vérifications supplémentaires : l'appelant est-il le propriétaire, et la nouvelle adresse est-elle différente de zéro. Une comparaison en mémoire coûte très peu.
+- `retirerTout()` et `deposer()` ne changent pas : la version vulnérable faisait déjà la même vérification dans `retirerTout()`, le modificateur ne fait que la réécrire autrement.
+- Le déploiement coûte 17,3 % de plus, pour la même raison que la banque : plus de code (le modificateur est recopié dans chaque fonction protégée, plus un nouveau message d'erreur).
+
+Le surcoût est justifié sans hésitation : 190 gaz par appel et un déploiement un peu plus cher, payé une seule fois, contre la perte du contrat et de ses fonds.
+
+**`tx.origin` : la correction ne coûte rien.**
+
+- Le déploiement et `transferer()` coûtent exactement le même gaz dans les deux versions. Lire `tx.origin` ou `msg.sender` coûte le même prix (2 gaz chacun), et le reste du code est identique.
+
+C'est le cas le plus net : la sécurité est gratuite, il n'y a aucune raison de conserver `tx.origin`.
+
+### 7.4 Exemple de conversion du gaz en ETH
+
+Formule du cours :
+
+```
+frais = gaz utilisé × (frais de base + pourboire)
+```
+
+Hypothèses : frais de base de 10 gwei, pourboire de 2 gwei. Rappel : 1 ETH = 1 000 000 000 gwei.
+
+Un retrait sur la banque corrigée, `BanqueSecurisee.retirer()`, consomme 46 152 gaz :
+
+```
+46 152 × (10 + 2) = 553 824 gwei = 0,000553824 ETH
+```
+
+Le même retrait sur la banque vulnérable consomme 30 299 gaz :
+
+```
+30 299 × (10 + 2) = 363 588 gwei = 0,000363588 ETH
+```
+
+La protection contre la réentrance coûte donc 190 236 gwei de plus par retrait, soit 0,000190236 ETH. Dans le test d'attaque, la faille permet de voler 5 ETH en une seule transaction.
+
+### 7.5 Limites
+
+- Les mesures sont faites sans optimiseur. Avec l'optimiseur de Solidity activé, les valeurs absolues baisseraient, mais le sens des écarts resterait le même.
+- La colonne « # calls » de `gas-report.txt` compte certaines transactions plusieurs fois avec cette version du plugin. Elle ne doit pas être utilisée ; les valeurs de gaz, elles, sont identiques d'un appel à l'autre (colonnes Min et Max vides).
+
+## 8. Recommandations générales
 
 1. Appliquer systématiquement l'ordre Checks-Effects-Interactions dans toute fonction qui effectue un appel externe.
 2. Protéger chaque fonction sensible par un contrôle d'accès explicite, et auditer la visibilité de toutes les fonctions.
@@ -268,7 +354,7 @@ Convention de nommage : un test `FAILLE` réussit quand l'attaque fonctionne sur
 4. S'appuyer sur des bibliothèques auditées (OpenZeppelin : `ReentrancyGuard`, `Ownable`, `AccessControl`) plutôt que de réécrire ces mécanismes.
 5. Écrire des tests d'attaque en plus des tests fonctionnels, et compléter par des outils d'analyse statique comme Slither.
 
-## 8. Références
+## 9. Références
 
 - SWC Registry : SWC-105, SWC-106, SWC-107, SWC-115 — https://swcregistry.io
 - OWASP Smart Contract Top 10 — https://owasp.org/www-project-smart-contract-top-10/

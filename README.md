@@ -29,6 +29,7 @@ test/
   03-tx-origin.test.js
 docs/
   rapport.md    rapport détaillé
+gas-report.txt  rapport de gaz, régénéré à chaque exécution des tests
 ```
 
 ## Prérequis
@@ -97,6 +98,40 @@ Résultat attendu : 14 tests réussis.
 - Un test préfixé `FAILLE` réussit lorsque l'attaque **fonctionne** sur le contrat vulnérable : il prouve que la faille existe.
 - Un test préfixé `CORRECTION` réussit lorsque la même attaque **échoue** sur le contrat corrigé.
 - Les autres tests vérifient que l'usage légitime continue de fonctionner.
+
+## Analyse du gaz
+
+Le rapport de gaz (`hardhat-gas-reporter`) est activé dans `hardhat.config.js`. Chaque exécution de `npx hardhat test` réécrit le fichier `gas-report.txt` à la racine du projet. Le tableau n'est plus affiché dans le terminal.
+
+Mesures : Solidity 0.8.24, optimiseur désactivé, réseau local Hardhat.
+
+| Vulnérabilité | Opération | Version vulnérable (gaz) | Version corrigée (gaz) | Écart |
+|---|---|---:|---:|---:|
+| 1. Réentrance | Déploiement de la banque | 414 846 | 466 344 | +51 498 (+12,4 %) |
+| | `deposer()` | 45 182 | 45 182 | 0 |
+| | `retirer()` | 30 299 | 46 152 | +15 853 (+52,3 %) |
+| 2. Contrôle d'accès | Déploiement du coffre | 447 348 | 524 559 | +77 211 (+17,3 %) |
+| | `deposer()` | 22 757 | 22 757 | 0 |
+| | `changerProprietaire()` | 28 676 | 28 866 | +190 (+0,7 %) |
+| | `retirerTout()` | 32 368 | 32 368 | 0 |
+| 3. `tx.origin` | Déploiement du portefeuille | 345 024 | 345 024 | 0 |
+| | `transferer()` | 35 580 | 35 580 | 0 |
+
+Pourquoi ces écarts :
+
+- **Réentrance : plus cher.** Le verrou anti-réentrance écrit deux fois dans le stockage du contrat à chaque retrait, et l'écriture dans le stockage est l'opération la plus chère de l'EVM. Le contrat contient aussi plus de code, donc son déploiement coûte plus. Le surcoût est justifié : environ 16 000 gaz par retrait, contre le vol de tous les fonds.
+- **Contrôle d'accès : presque identique.** La correction ajoute deux vérifications simples (190 gaz) et un peu de code au déploiement. Le surcoût est négligeable par rapport à la perte du contrat.
+- **`tx.origin` : identique.** Lire `msg.sender` coûte le même prix que lire `tx.origin`. La correction est gratuite.
+
+Exemple de conversion en ETH, avec la formule du cours `frais = gaz utilisé × (frais de base + pourboire)`, un frais de base de 10 gwei et un pourboire de 2 gwei, pour un retrait sur la banque corrigée (46 152 gaz) :
+
+```
+46 152 × (10 + 2) = 553 824 gwei = 0,000553824 ETH
+```
+
+Le même retrait sur la banque vulnérable coûte 30 299 × 12 = 363 588 gwei, soit 0,000363588 ETH. La protection coûte donc 0,000190236 ETH de plus par retrait.
+
+L'analyse complète se trouve dans la section « Analyse du gaz » de [docs/rapport.md](docs/rapport.md).
 
 ## Environnement technique
 
